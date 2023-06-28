@@ -1,0 +1,209 @@
+<html>
+    <head>
+      <title>
+        {{title}}
+      </title>
+    </head>
+<body style="background-color: #E6E6FA; color: #708090;">
+<div *ngIf="error">{{error}}</div>
+<div *ngIf="success">{{success}}</div>
+    
+<div id="theList" >
+
+  <h1 style="text-align: center;" >Lista documentelor: {{prevobj}}</h1> 
+  <br>
+
+  <div style="text-align: center;">
+      <label style="margin-right: 10px;"for="documentType">Type:</label>
+      <input type="text" id="documentType" name="documentType"><br><br>
+      <label style="margin-right: 10px;"for="documentFormat">Fromat:</label>
+      <input type="text" id="documentFormat" name="documentFormat"><br><br>
+      <button type="button" id="filtebtn" (click)="setFilterValues()">Filter</button>
+  </div>
+  
+  <br>
+  <br>  
+    <div style="display: flex; justify-content: center">
+      <div>
+        <table ><tr><th>Id</th><th>Author</th><th>Title</th><th>NrOfPages</th><th>Type</th><th>Format</th><th>Operation</th></tr>
+          <tr style="text-align: center;" *ngFor="let item of documents">
+              <td>{{item.id}}</td>
+              <td>{{item.author}}</td>
+              <td>{{item.title}}</td>
+              <td>{{item.nr_of_pages}}</td>
+              <td>{{item.type}}</td>
+              <td>{{item.format}}</td>
+              <td>
+                <button class='edit-btn' (click)="showUpdateForm(item?.id || 0)">Edit</button>
+                <button class='delete-btn' (click)="deleteDocument(item.id ? item.id : 0)">Delete</button>
+              </td>
+            <!--<li *ngFor="let item of documents">{{item.author}} | {{item.title}} | {{item.nr_of_pages}} | {{item.type}} | {{item.format}} </li>-->
+          </tr>
+      </table>
+    </div>
+  </div>
+</div>
+<br>
+<br>
+<br>
+<div *ngFor="let item of documents">
+  <div *ngIf="showUpdateFormId === item.id">
+    <div style="text-align: center;">
+    <h2>Update Form </h2>
+    <div>
+      <label style="margin-right: 10px;" >Author:</label>
+      <input type="text"
+             [(ngModel)]="item.author"
+             required
+             #author="ngModel">
+             <span class="help-block danger" *ngIf="author.errors?.['required'] && author.touched">
+              The model Author is required
+            </span>
+    </div>
+    <div>
+      <label style="margin-right: 10px;" >Title:</label>
+      <input type="text"
+             [(ngModel)]="item.title"
+             required
+             #title="ngModel">
+             <span class="help-block danger" *ngIf="title.errors?.['required'] && title.touched">
+              The model Title is required
+            </span>
+    </div>
+    <div>
+      <label style="margin-right: 10px;" >NrOfPages:</label>
+      <input type="number"
+             [(ngModel)]="item.nr_of_pages"
+             required
+             #nr_of_pages="ngModel"
+             pattern="^[0-9]+$">
+             <span class="help-block danger" *ngIf="nr_of_pages.errors?.['required'] && nr_of_pages.touched">
+              The model NrOfPages is required
+            </span>
+            <span class="help-block danger" *ngIf="nr_of_pages.errors?.['pattern'] && nr_of_pages.touched">
+              You can have negative NrOfPages !
+            </span>
+    </div>
+    <div>
+      <label style="margin-right: 10px;" >Type:</label>
+      <input type="text"
+             [(ngModel)]="item.type"
+             required
+             #type="ngModel">
+             <span class="help-block danger" *ngIf="type.errors?.['required'] && type.touched">
+              The model Type is required
+            </span>
+    </div>
+    <div>
+      <label style="margin-right: 10px;" >Format:</label>
+      <input type="text"
+             [(ngModel)]="item.format"
+             required
+             #format="ngModel">
+             <span class="help-block danger" *ngIf="format.errors?.['required'] && format.touched">
+              The model Format is required
+            </span>
+    </div>
+    <div>
+      <input type="button"
+             value="Update"
+             class="btn btn-primary btn-sm"
+             [disabled]="author.invalid || title.invalid || nr_of_pages.invalid || type.invalid"
+             (click)="updateDocument(author, title,nr_of_pages,type,format, item.id)">
+    </div>
+  </div>
+  </div>
+</div>
+<br>
+
+
+<h2 style="text-align: center;">Add form</h2>
+<br>
+  <form style="text-align: center;" #f="ngForm" name="theForm" (submit)="addDocument(f)">
+    
+    <div>
+      <label style="margin-right: 10px;" >Author:</label>
+      <input type="text"
+            
+            name="author"
+            [(ngModel)]="document.author"
+            #documentAuthor="ngModel"
+            required
+            >
+            <span class="help-block danger" *ngIf="documentAuthor.errors?.['required'] && documentAuthor.touched">
+              The model Author is required
+            </span>
+      </div>
+
+    <div>
+      <label style="margin-right: 10px;">Title:</label>
+      <input type="text"
+            
+            name="title"
+            [(ngModel)]="document.title"
+            #documentTitle="ngModel"
+            required>
+            <span class="help-block danger" *ngIf="documentTitle.errors?.['required'] && documentTitle.touched">
+              The model Title is required
+            </span>
+    </div>
+
+
+    <div>
+      <label style="margin-right: 10px;">NrOfPages:</label>
+      <input type="number"
+            
+            name="nr_of_pages"
+            [(ngModel)]="document.nr_of_pages"
+            #documentNrOfPages="ngModel"
+            required
+            pattern="^[0-9]+$">
+            <span class="help-block danger" *ngIf="documentNrOfPages.errors?.['required'] && documentNrOfPages.touched">
+              The model NrOfPages is required
+            </span>
+            <span class="help-block danger" *ngIf="documentNrOfPages.errors?.['pattern'] && documentNrOfPages.touched">
+              You can have negative NrOfPages !
+            </span>
+    </div>
+
+
+    <div>
+      <label style="margin-right: 10px;">Type:</label>
+      <input type="text"
+            
+            name="type"
+            [(ngModel)]="document.type"
+            #documentType="ngModel"
+            required>
+            <span class="help-block danger" *ngIf="documentType.errors?.['required'] && documentType.touched">
+              The model type is required
+            </span>
+    </div>
+
+
+    <div>
+      <label style="margin-right: 10px;">Format:</label>
+      <input type="text"
+            
+            name="format"
+            [(ngModel)]="document.format"
+            #documentFormat="ngModel"
+            required>
+            <span class="help-block danger" *ngIf="documentFormat.errors?.['required'] && documentFormat.touched">
+              The model format is required
+            </span>
+    </div>
+
+    <button
+        class="btn btn-primary btn-sm"
+        [disabled]="f.invalid">Add</button>
+  </form>
+
+  
+  
+  
+
+  
+
+</body>
+</html>
